@@ -1,0 +1,38 @@
+    <div class="direccion-form">
+    <h2>Dirección de Entrega</h2>
+    
+    <form (ngSubmit)="onSubmit()" [formGroup]="direccionForm">
+        <div>
+        <label for="nombre">Nombre</label><br>
+        <input id="nombre" formControlName="nombre" placeholder="Nombre del destinatario" required>
+        </div>
+
+        <div>
+        <label for="direccion">Dirección</label><br>
+        <input id="direccion" formControlName="direccion" placeholder="Calle, número, etc." required>
+        </div>
+    
+        <div>
+        <label for="ciudad">Ciudad</label><br>
+        <input id="ciudad" formControlName="ciudad" placeholder="Ciudad" required>
+        </div>
+    
+        <button type="submit" [disabled]="direccionForm.invalid">Guardar Dirección</button>
+    </form>
+    
+    <div *ngIf="direcciones.length > 0">
+        <h3>Direcciones Guardadas</h3>
+        <ul>
+        <li *ngFor="let dir of direcciones">
+            {{ dir.nombre }} - {{ dir.direccion }} - {{ dir.ciudad }}
+            <button (click)="editarDireccion(dir)">Editar</button>
+            <button (click)="eliminarDireccion(dir)">Eliminar</button>
+        </li>
+        </ul>
+    </div>
+    
+    <div *ngIf="direcciones.length === 0">
+        <p>No hay direcciones guardadas. Agrega una nueva dirección para continuar.</p>
+    </div>
+    </div>
+    

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { DireccionesComponent } from './components/direcciones/direcciones.component'; // Importa tu componente
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  standalone: true,  // Marca este componente como standalone
+  imports: [DireccionesComponent],  // Importa el componente de direcciones
 })
 export class AppComponent {
-  title = 'direcciones';
+  title = 'direcciones-app';  // Lógica adicional si la tienes
 }
