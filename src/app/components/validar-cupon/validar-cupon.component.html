@@ -1,0 +1,5 @@
+<div class="input-group mb-3">
+    <input [(ngModel)]="codigoCupon" type="text" class="form-control" placeholder="CODIGO" aria-label="Recipient's username" aria-describedby="button-addon2" (keydown.enter)="validarCupon()">
+    <button (click) = "validarCupon()" class="btn btn-outline-secondary" type="button" id="button-addon2">Validar</button>
+</div>
+<p *ngIf="mensaje" >{{mensaje}}</p>

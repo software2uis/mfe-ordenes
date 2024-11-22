@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'; // Importa los formularios reactivos
 
@@ -6,7 +7,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
   standalone: true,
   templateUrl: './direcciones.component.html',
   styleUrls: ['./direcciones.component.css'],
-  imports: [ReactiveFormsModule]  // Agrega ReactiveFormsModule a los imports
+  imports: [ReactiveFormsModule, CommonModule]  // Agrega ReactiveFormsModule a los imports
 })
 export class DireccionesComponent {
   direccionForm: FormGroup;
