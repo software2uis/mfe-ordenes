@@ -1,5 +1,13 @@
-<div class="input-group mb-3">
-    <input [(ngModel)]="codigoCupon" type="text" class="form-control" placeholder="CODIGO" aria-label="Recipient's username" aria-describedby="button-addon2" (keydown.enter)="validarCupon()">
-    <button (click) = "validarCupon()" class="btn btn-outline-secondary" type="button" id="button-addon2">Validar</button>
+<form [formGroup]="cuponForm" class="input-group mb-3">
+    <input formControlName="codigoCupon" type="text" class="form-control" placeholder="CODIGO"
+        aria-label="Recipient's username" aria-describedby="button-addon2" (keydown.enter)="validarCupon()" />
+    <button (click)="validarCupon()" class="btn btn-outline-secondary" type="button" id="button-addon2">
+        Validar
+    </button>
+</form>
+<div *ngIf="mostrarMensaje" class="alert" [ngClass]="{
+    'alert-success': cuponForm.valid,
+    'alert-danger': !cuponForm.valid
+  }" role="alert">
+    <p>{{ mensaje }}</p>
 </div>
-<p *ngIf="mensaje" >{{mensaje}}</p>

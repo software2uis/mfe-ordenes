@@ -1,0 +1,93 @@
+<div class="container mt-5">
+  <h2>Detalles del Pedido</h2>
+  <div class="card">
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead class="thead-light">
+          <tr>
+            <th></th>
+            <th></th>
+            <th class="text-center">Cantidad</th>
+            <th class="text-center">Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of productos">
+            <td>
+              <img [src]="item.imagen" alt="{{ item.nombre }}" class="img-thumbnail to-round-edge"
+                style="width: 50px; height: 50px; object-fit: cover;" />
+            </td>
+            <td class="text-center">{{ item.nombre }}</td>
+            <td class="text-center">{{ item.cantidad }}</td>
+            <td class="text-center">{{ item.precio | currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr />
+
+      <p>Total sin descuentos: {{ monto | currency : 'COP':'$':'1.0-0' }}</p>
+      <p>Descuentos: {{ descuentos }}%</p>
+      
+      <div  class="dropdown d-inline">
+        <button (click)="mostrarValidCupon()"  class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownDescuentos"
+          data-bs-toggle="cupones" aria-expanded="false">
+          Validar Cupón
+        </button>
+        <div id="cupones" *ngIf="validCupon">
+          <app-validar-cupon (validacion)="aplicarDescuento($event)"></app-validar-cupon>
+        </div>
+      </div>
+      <p>Total: {{ total | currency : 'COP':'$':'1.0-0' }}</p>
+
+
+      <p>Método de Pago: {{metodoPagoSeleccionado}}</p>
+      <div class="dropdown d-inline" *ngIf="!mostrarFormularioTarjeta">
+        <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownMenuButton"
+          data-bs-toggle="collapse" data-bs-target="#paymentOptions" aria-expanded="false"
+          aria-controls="paymentOptions">
+          Seleccionar Método
+        </button>
+        <div class="collapse" id="paymentOptions">
+          <form [formGroup]="metodoPagoForm">
+            <div  class="row mt-2">
+              <h5  class="mt-4">Selecciona una Tarjeta</h5>
+              <div *ngFor="let tarjeta of tarjetasGuardadas">
+                <input type="radio" [formControlName]="'metodoPago'" [value]="tarjeta.numeroTarjeta" />
+                {{ tarjeta.numeroTarjeta }}
+              </div>
+              <div class="col-4">
+                <button (click)="addTarjeta()" type="button" class="btn btn-primary w-100">Añadir Tarjeta </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div *ngIf="mostrarFormularioTarjeta">
+        <div class="formulario-tarjeta-header">
+          <button (click)="mostrarFormularioTarjeta = false" type="button" class="btn-close ms-2"
+          aria-label="Close"></button>
+        <h5 class="mt-4 d-inline-block">Añadir Nueva Tarjeta</h5>
+        </div>
+        <hr class="formulario-separador" />
+        <app-tarjeta (tarjetaGuardada)="cargarTarjetasGuardadas()"></app-tarjeta>
+      </div>
+
+      
+      
+      <div class="text-center mt-4">
+        <button id = "btnEnviar" class="btn btn-success" (click)="enviarPedido()">Enviar Pedido</button>
+      </div>
+
+      <div *ngIf="mostrarMensaje" class="alert" [ngClass]="{
+        'alert-success': estado,
+        'alert-danger': !estado
+      }" role="alert">
+        <p>{{mensaje }}</p>
+    </div>
+
+      
+    </div>
+  </div>
+</div>
