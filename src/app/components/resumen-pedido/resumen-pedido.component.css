@@ -1,0 +1,64 @@
+.container {
+    max-width: 600px;
+  }
+  
+  .card {
+    margin-top: 20px;
+  }
+  
+  .card-title {
+    font-weight: bold;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  .formulario-tarjeta-header {
+    display: flex;
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: space-between; /* Separa el botón del título */
+    position: relative; /* Permite ajustar el título en el centro */
+    margin-bottom: 1rem; /* Espaciado inferior para separación */
+  }
+  
+  .formulario-tarjeta-header h5 {
+    flex: none; /* Evita que el título se estire */
+    text-align: center; /* Centra el texto dentro de su contenedor */
+    margin: 0 auto; /* Centra horizontalmente en el contenedor principal */
+    position: absolute; /* Para centrarlo completamente */
+    left: 50%; /* Posición horizontal inicial */
+    transform: translateX(-50%); /* Ajusta el centrado horizontal */
+  }
+  
+  .formulario-tarjeta-header .btn-close {
+    margin-left: 0; /* Mantiene el botón en la esquina izquierda */
+  }
+  .formulario-separador {
+    border: none; /* Quita el borde por defecto */
+    border-top: 1px solid #ccc; /* Define un borde superior */
+    margin: 1rem 0; /* Añade espacio arriba y abajo */
+    width: 100%; /* Asegura que ocupe todo el ancho */
+  }
+
+  .to-round-edge{
+    border-radius: 50%;
+  }
+
+  .text-center{
+  text-align: center;
+}
+
+.popover {
+  position: absolute;
+  z-index: 1050;
+  display: block;
+  max-width: 276px;
+  padding: 1rem;
+  margin: 0;
+  font-size: .875rem;
+  color: #212529;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .125);
+  border-radius: .3rem;
+}

@@ -1,0 +1,14 @@
+.direccion-form {
+        width: 300px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    
+    .direccion-form form div {
+        margin-bottom: 15px;
+    }
+    
+    button {
+        margin: 5px;
+    }
+    

@@ -1,0 +1,53 @@
+        <form (ngSubmit)="guardarDatos()" [formGroup]="tarjetaForm">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del Titular</label>
+            <input id="nombre" formControlName="nombre" class="form-control" placeholder="Nombre del titular" [ngClass]="{'is-invalid': f['nombre'].touched && f['nombre'].invalid}">
+            <div *ngIf="f['nombre'].touched && f['nombre'].invalid" class="invalid-feedback">
+              <div *ngIf="f['nombre'].errors?.['required']">El nombre es requerido.</div>
+              <div *ngIf="f['nombre'].errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</div>
+            </div>
+          </div>
+  
+          <div class="mb-3">
+            <label for="numeroTarjeta" class="form-label">Número de Tarjeta</label>
+            <input id="numeroTarjeta" formControlName="numeroTarjeta" class="form-control" placeholder="1234 5678 9012 3456" [ngClass]="{'is-invalid': f['numeroTarjeta'].touched && f['numeroTarjeta'].invalid}">
+            <div *ngIf="f['numeroTarjeta'].touched && f['numeroTarjeta'].invalid" class="invalid-feedback">
+              <div *ngIf="f['numeroTarjeta'].errors?.['required']">El número de tarjeta es requerido.</div>
+              <div *ngIf="f['numeroTarjeta'].errors?.['pattern']">Debe contener 16 dígitos numéricos.</div>
+            </div>
+          </div>
+  
+          <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="fechaExpiracion" class="form-label">Fecha de Expiración</label>
+                <input id="fechaExpiracion" formControlName="fechaExpiracion" class="form-control" placeholder="MM/AA" [ngClass]="{'is-invalid': f['fechaExpiracion'].touched && f['fechaExpiracion'].invalid}">
+                <div *ngIf="f['fechaExpiracion'].touched && f['fechaExpiracion'].invalid" class="invalid-feedback">
+                    <div *ngIf="f['fechaExpiracion'].errors?.['required']">La fecha de expiración es requerida.</div>
+                    <div *ngIf="f['fechaExpiracion'].errors?.['pattern']">El formato debe ser MM/AA.</div>
+                    <div *ngIf="f['fechaExpiracion'].errors?.['fechaExpirada']">La fecha de expiración no puede ser en el pasado.</div>
+                    <div *ngIf="f['fechaExpiracion'].errors?.['mesInvalido']">El mes debe estar entre 1 y 12.</div>
+                    <div *ngIf="f['fechaExpiracion'].errors?.['añoInvalido']">El año debe ser un número positivo.</div>
+                </div>
+            </div>
+  
+            <div class="col-md-6 mb-3">
+              <label for="codigoSeguridad" class="form-label">Código de Seguridad</label>
+              <input id="codigoSeguridad" formControlName="codigoSeguridad" class="form-control" placeholder="123" [ngClass]="{'is-invalid': f['codigoSeguridad'].touched && f['codigoSeguridad'].invalid}">
+              <div *ngIf="f['codigoSeguridad'].touched && f['codigoSeguridad'].invalid" class="invalid-feedback">
+                <div *ngIf="f['codigoSeguridad'].errors?.['required']">El código de seguridad es requerido.</div>
+                <div *ngIf="f['codigoSeguridad'].errors?.['pattern']">Debe ser un número de 3 dígitos.</div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary" [disabled]="tarjetaForm.invalid">Guardar Datos</button>
+          </div>
+        </form>
+  
+        <div *ngIf="mostrarMensaje" class="alert" [ngClass]="{'alert-success': tarjetaForm.valid, 'alert-danger': !tarjetaForm.valid}" role="alert">
+          {{ mensaje }}
+        </div>
+
+  
+  
