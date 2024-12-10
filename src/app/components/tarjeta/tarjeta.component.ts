@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Tarjeta } from '../../../../models/tarjeta.model';
+import { TarjetaService } from '../../../../services/tarjeta/tarjeta.service';
 
 @Component({
   selector: 'app-tarjeta',
@@ -17,7 +18,7 @@ import { Tarjeta } from '../../../../models/tarjeta.model';
   templateUrl: './tarjeta.component.html',
   styleUrls: ['./tarjeta.component.css'],
 })
-export class TarjetaComponent {
+export class TarjetaComponent  {
   tarjetaForm: FormGroup;
   mensaje: string = '';
   mostrarMensaje: boolean = false;
@@ -25,15 +26,14 @@ export class TarjetaComponent {
   tarjeta: Tarjeta = {};
 
   private datosTarjetaMock = {
-    nombre: 'Juan Perez',
+    nombreTitular: 'Juan Perez',
     numeroTarjeta: '1234567890123456',
-    fechaExpiracion: '12/25',
-    codigoSeguridad: '123',
+    fechaExpiracion: '12/25'
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private _tarjetaService: TarjetaService) {
     this.tarjetaForm = this.fb.group({
-      nombre: [
+      nombreTitular: [
         '',
         [Validators.required, Validators.minLength(3), this.validarNombre],
       ],
@@ -48,11 +48,7 @@ export class TarjetaComponent {
           Validators.pattern('^(0[1-9]|1[0-2])/([0-9]{2})$'),
           this.validarFechaExpiracion,
         ],
-      ],
-      codigoSeguridad: [
-        '',
-        [Validators.required, Validators.pattern('^[0-9]{3}$')],
-      ],
+      ]
     });
   }
 
@@ -75,7 +71,17 @@ export class TarjetaComponent {
         this.mostrarMensaje = true;
         setTimeout(() => (this.mostrarMensaje = false), 3000);
       } else {
+
         tarjetasGuardadas.push(this.tarjeta);
+        this._tarjetaService.guardarTarjeta(this.tarjeta).subscribe(
+          (response: { mensaje: string }) => {
+            console.log('Mensaje recibido:', response.mensaje);
+          },
+          (error ) => {
+            console.error('Error:', error); 
+          }
+        );
+        
         localStorage.setItem(
           'tarjetasGuardadas',
           JSON.stringify(tarjetasGuardadas)

@@ -1,10 +1,10 @@
         <form (ngSubmit)="guardarDatos()" [formGroup]="tarjetaForm">
           <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre del Titular</label>
-            <input id="nombre" formControlName="nombre" class="form-control" placeholder="Nombre del titular" [ngClass]="{'is-invalid': f['nombre'].touched && f['nombre'].invalid}">
-            <div *ngIf="f['nombre'].touched && f['nombre'].invalid" class="invalid-feedback">
-              <div *ngIf="f['nombre'].errors?.['required']">El nombre es requerido.</div>
-              <div *ngIf="f['nombre'].errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</div>
+            <label for="nombreTitular" class="form-label">Nombre del Titular</label>
+            <input id="nombreTitular" formControlName="nombreTitular" class="form-control" placeholder="Nombre del titular" [ngClass]="{'is-invalid': f['nombreTitular'].touched && f['nombreTitular'].invalid}">
+            <div *ngIf="f['nombreTitular'].touched && f['nombreTitular'].invalid" class="invalid-feedback">
+              <div *ngIf="f['nombreTitular'].errors?.['required']">El nombre es requerido.</div>
+              <div *ngIf="f['nombreTitular'].errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</div>
             </div>
           </div>
   
@@ -17,8 +17,8 @@
             </div>
           </div>
   
-          <div class="row">
-            <div class="col-md-6 mb-3">
+        
+            <div class=" mb-3">
                 <label for="fechaExpiracion" class="form-label">Fecha de Expiración</label>
                 <input id="fechaExpiracion" formControlName="fechaExpiracion" class="form-control" placeholder="MM/AA" [ngClass]="{'is-invalid': f['fechaExpiracion'].touched && f['fechaExpiracion'].invalid}">
                 <div *ngIf="f['fechaExpiracion'].touched && f['fechaExpiracion'].invalid" class="invalid-feedback">
@@ -30,15 +30,7 @@
                 </div>
             </div>
   
-            <div class="col-md-6 mb-3">
-              <label for="codigoSeguridad" class="form-label">Código de Seguridad</label>
-              <input id="codigoSeguridad" formControlName="codigoSeguridad" class="form-control" placeholder="123" [ngClass]="{'is-invalid': f['codigoSeguridad'].touched && f['codigoSeguridad'].invalid}">
-              <div *ngIf="f['codigoSeguridad'].touched && f['codigoSeguridad'].invalid" class="invalid-feedback">
-                <div *ngIf="f['codigoSeguridad'].errors?.['required']">El código de seguridad es requerido.</div>
-                <div *ngIf="f['codigoSeguridad'].errors?.['pattern']">Debe ser un número de 3 dígitos.</div>
-              </div>
-            </div>
-          </div>
+          
   
           <div class="d-grid">
             <button type="submit" class="btn btn-primary" [disabled]="tarjetaForm.invalid">Guardar Datos</button>

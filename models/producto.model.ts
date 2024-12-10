@@ -1,6 +1,7 @@
 export interface Producto {
-  nombre: string;
-  cantidad: number;
-  precio: number;
-  imagen: string;
+  idMongo: string,
+  name: string;
+  quantity: number;
+  price: number;
+  imageUrl: string;
 }
