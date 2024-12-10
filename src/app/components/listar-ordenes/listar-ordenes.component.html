@@ -7,27 +7,27 @@
           <thead class="table-dark">
           <tr>
             <th>#</th>
-            <th>Cliente</th>
+            <th>Producto</th>
             <th>Estado</th>
             <th>Fecha de Creación</th>
             <th>Total</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let orden of ordenes; let i = index">
+          <tr *ngFor="let producto of productos; let i = index">
             <td>{{ i + 1 }}</td>
-            <td>{{ orden.cliente?.nombre || 'N/A' }}</td>
+            <td>{{  producto.nombre || 'N/A' }}</td>
             <td>
                 <span class="badge" [ngClass]="{
-                  'bg-success': orden.estado === 'Completado',
-                  'bg-warning': orden.estado === 'Pendiente',
-                  'bg-danger': orden.estado === 'Cancelado'
+                  'bg-success': producto.estado === 'COMPLETADO',
+                  'bg-warning': producto.estado === 'PENDIENTE',
+                  'bg-danger': producto.estado === 'CANCELADO'
                 }">
-                  {{ orden.estado }}
+                  {{ ordenes[producto.orden || 0].estado }}
                 </span>
             </td>
-            <td>{{ orden.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ orden.total | currency: 'USD' }}</td>
+            <td>{{ producto.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ producto.total | currency: 'USD' }}</td>
           </tr>
           </tbody>
         </table>
@@ -35,3 +35,4 @@
     </div>
   </div>
 </div>
+|
