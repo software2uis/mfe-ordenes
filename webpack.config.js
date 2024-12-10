@@ -10,8 +10,9 @@ sharedMappings.register(
 
 module.exports = {
   output: {
-    uniqueName: "direcciones",
-    publicPath: "auto"
+    uniqueName: "mfeOrdenes",
+    publicPath: "auto",
+    scriptType: "text/javascript",
   },
   optimization: {
     runtimeChunk: false
@@ -26,7 +27,12 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-        library: { type: "module" },
+      name: "mfe_ordenes",
+      filename: "remoteEntry.js",
+      exposes: {
+          './RoutingModule': './src/app/app.routes.ts',
+          './OrdenesComponent': './src/app/ordenes/ordenes.component.ts',
+      },
 
         // For remotes (please adjust)
         // name: "direcciones",
@@ -46,6 +52,8 @@ module.exports = {
           "@angular/common": { singleton: true, strictVersion: true, requiredVersion: 'auto' },
           "@angular/common/http": { singleton: true, strictVersion: true, requiredVersion: 'auto' },
           "@angular/router": { singleton: true, strictVersion: true, requiredVersion: 'auto' },
+
+          bootstrap: { singleton: true, strictVersion: false }, // Adjust strictVersion if required
 
           ...sharedMappings.getDescriptors()
         })

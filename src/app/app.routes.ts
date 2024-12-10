@@ -11,5 +11,9 @@ export const routes: Routes = [
     {path:"direcciones", component:  DireccionesComponent},
     {path:"cupon", component:  ValidarCuponComponent},
     {path:"tarjeta", component:  TarjetaComponent},
-    {path:"resumen", component:  ResumenPedidoComponent}
+    {path:"resumen", component:  ResumenPedidoComponent},
+    {
+      path: 'ordenes',
+      loadComponent: () => import('./components/listar-ordenes/listar-ordenes.component').then(m => m.ListarOrdenesComponent)
+    }
 ];
