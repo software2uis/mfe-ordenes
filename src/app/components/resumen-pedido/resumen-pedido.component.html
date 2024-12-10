@@ -14,19 +14,19 @@
         <tbody>
           <tr *ngFor="let item of productos">
             <td>
-              <img [src]="item.imagen" alt="{{ item.nombre }}" class="img-thumbnail to-round-edge"
+              <img [src]="item.imageUrl" alt="{{ item.name }}" class="img-thumbnail to-round-edge"
                 style="width: 50px; height: 50px; object-fit: cover;" />
             </td>
-            <td class="text-center">{{ item.nombre }}</td>
-            <td class="text-center">{{ item.cantidad }}</td>
-            <td class="text-center">{{ item.precio | currency }}</td>
+            <td class="text-center">{{ item.name }}</td>
+            <td class="text-center">{{ item.quantity }}</td>
+            <td class="text-center">{{ item.price | currency :'COP':'$':'1.1-2' }}</td>
           </tr>
         </tbody>
       </table>
 
       <hr />
 
-      <p>Total sin descuentos: {{ monto | currency : 'COP':'$':'1.0-0' }}</p>
+      <p>Total sin descuentos: {{ monto | currency : 'COP':'$':'1.1-2' }}</p>
       <p>Descuentos: {{ descuentos }}%</p>
       
       <div  class="dropdown d-inline">
@@ -38,7 +38,7 @@
           <app-validar-cupon (validacion)="aplicarDescuento($event)"></app-validar-cupon>
         </div>
       </div>
-      <p>Total: {{ total | currency : 'COP':'$':'1.0-0' }}</p>
+      <p>Total: {{ total | currency : 'COP':'$':'1.1-2' }}</p>
 
 
       <p>Método de Pago: {{metodoPagoSeleccionado}}</p>

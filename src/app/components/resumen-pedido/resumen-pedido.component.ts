@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { TarjetaComponent } from '../tarjeta/tarjeta.component';
 import { ValidarCuponComponent } from '../validar-cupon/validar-cupon.component';
 import { CommonModule } from '@angular/common';
@@ -8,64 +13,92 @@ import { PedidoService } from '../../../../services/pedido/pedido.service';
 import { Pedido } from '../../../../models/pedido';
 import { Producto } from '../../../../models/producto.model';
 
-
 @Component({
   selector: 'app-resumen-pedido',
   templateUrl: './resumen-pedido.component.html',
   styleUrls: ['./resumen-pedido.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, TarjetaComponent, ValidarCuponComponent, CommonModule]
+  imports: [
+    ReactiveFormsModule,
+    TarjetaComponent,
+    ValidarCuponComponent,
+    CommonModule,
+  ],
 })
-export class ResumenPedidoComponent implements OnInit{
+export class ResumenPedidoComponent implements OnInit {
   productos: Producto[] = [];
   total: number = 0;
-  monto:number = 0;
-  estado:boolean = false;
+  monto: number = 0;
+  estado: boolean = false;
   descuentos: number = 0;
   metodoPagoSeleccionado: string = '';
   mostrarFormularioTarjeta: boolean = false;
-  tarjetasGuardadas: Tarjeta[] = []; 
+  tarjetasGuardadas: Tarjeta[] = [];
   metodoPagoForm: FormGroup;
   validCupon: boolean = false;
   mostrarTarjetas: boolean = true;
-  mostrarMensaje:boolean = false;
-  mensaje:string ='';
+  mostrarMensaje: boolean = false;
+  mensaje: string = '';
 
-  constructor(private fb: FormBuilder, private _pedidoServ: PedidoService) { 
-
+  constructor(private fb: FormBuilder, private _pedidoServ: PedidoService) {
     this.calcularTotal();
-
     this.metodoPagoForm = this.fb.group({
-      metodoPago: ['', Validators.required]
+      metodoPago: ['', Validators.required],
     });
 
     this.cargarTarjetasGuardadas();
-
 
     this.metodoPagoForm.get('metodoPago')?.valueChanges.subscribe((value) => {
       this.metodoPagoSeleccionado = value;
       this.cerrarDropdown();
     });
-
   }
 
   ngOnInit(): void {
     this._pedidoServ.obtenerProductos().subscribe(
-  (response: Producto[]) => {
-    if (response && response.length > 0) {
-      this.productos = response;
-    } else {
-      console.log('No se encontraron productos');
-    }
-  },
-  (error) => {
-    console.error('Error fetching data', error);
-  }
-);
+      (response: Producto[]) => {
+        if (response && response.length > 0) {
+          response.forEach((producto) => {
+            if (producto.quantity > 0) {
+              this.productos.push(producto)
+              this.monto += producto.price * producto.quantity;
+              this.total = this.monto;
+            }
+          });
+        } else {
+          console.log('No se encontraron productos');
+        }
+      },
+      (error) => {
+        console.error('Error fetching data', error);
+      }
+    );
 
-    this.calcularTotal()
+    const tarjetasMock: Tarjeta[] = [
+      {
+        nombreTitular: 'María López',
+        numeroTarjeta: '9876 5432 1098 7654',
+        fechaExpiracion: '11/29',
+      },
+      {
+        nombreTitular: 'Carlos García',
+        numeroTarjeta: '4567 8901 2345 6789',
+        fechaExpiracion: '10/26',
+      },
+      {
+        nombreTitular: 'Ana Martínez',
+        numeroTarjeta: '3210 9876 5432 1098',
+        fechaExpiracion: '09/27',
+      },
+      {
+        nombreTitular: 'Luis Fernández',
+        numeroTarjeta: '6543 2109 8765 4321',
+        fechaExpiracion: '08/27',
+      },
+    ];
+    localStorage.setItem('tarjetasGuardadas', JSON.stringify(tarjetasMock));
   }
-  
+
   enviarPedido() {
     if (!this.productos.length) {
       this.mostrarMensaje = true;
@@ -73,7 +106,7 @@ export class ResumenPedidoComponent implements OnInit{
       setTimeout(() => (this.mostrarMensaje = false), 3000);
       return;
     }
-    
+
     if (!this.metodoPagoSeleccionado) {
       this.mostrarMensaje = true;
       this.mensaje = 'El método de pago es requerido.';
@@ -83,15 +116,14 @@ export class ResumenPedidoComponent implements OnInit{
     const datosPedido: Pedido = {
       productos: this.productos,
       metodoPago: this.metodoPagoSeleccionado,
-      descuentos: this.descuentos,
+      descuentos: this.descuentos / 100,
       total: this.total,
     };
 
     console.log(datosPedido);
 
-    if(datosPedido){
+    if (datosPedido) {
       this.estado = true;
-      
 
       const btnEnviar = document.getElementById('btnEnviar');
       if (btnEnviar) {
@@ -103,7 +135,7 @@ export class ResumenPedidoComponent implements OnInit{
         btnTarjeta.style.display = 'none';
       }
 
-      const btnCupon  = document.getElementById('dropdownDescuentos')!;
+      const btnCupon = document.getElementById('dropdownDescuentos')!;
       if (btnCupon) {
         btnCupon.style.display = 'none';
       }
@@ -111,10 +143,8 @@ export class ResumenPedidoComponent implements OnInit{
       this.mostrarMensaje = true;
       this.mensaje = '¡Pago Exitoso!';
       setTimeout(() => (this.mostrarMensaje = false), 3000);
-    } 
-   
+    }
 
-    
     //URL pendiente
     // this._pedidoServ.enviarPedido(datosPedido).subscribe(
     //   (response) => {
@@ -138,7 +168,6 @@ export class ResumenPedidoComponent implements OnInit{
     this.mostrarFormularioTarjeta = !this.mostrarFormularioTarjeta;
   }
 
-
   cargarTarjetasGuardadas() {
     const tarjetas = localStorage.getItem('tarjetasGuardadas');
     if (tarjetas) {
@@ -149,24 +178,22 @@ export class ResumenPedidoComponent implements OnInit{
 
   aplicarDescuento(event: { valido: boolean; descuento: number }) {
     if (event.valido) {
-      this.descuentos  = event.descuento * 100; 
-      this.total = this.monto  * ( 1 - event.descuento );
-      setTimeout(() => (this.mostrarValidCupon()), 3000);
+      this.descuentos = event.descuento * 100;
+      this.total = this.monto * (1 - event.descuento);
+      setTimeout(() => this.mostrarValidCupon(), 3000);
     }
   }
 
-  mostrarValidCupon(){
+  mostrarValidCupon() {
     this.validCupon = !this.validCupon;
   }
 
- calcularTotal(){
-
-    this.productos.forEach(producto => {
-      this.monto += (producto.precio * producto.cantidad);
-      this.total = this.monto
+  calcularTotal() {
+    this.productos.forEach((producto) => {
+      console.log('Entrando en el método');
+      this.monto += producto.price * producto.quantity;
+      this.total = this.monto;
+      console.log(this.total);
     });
- }
+  }
 }
-
-
-
