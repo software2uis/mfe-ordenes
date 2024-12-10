@@ -1,26 +1,25 @@
 export interface OrdenDTO {
-  id:                    number;
-  fechaCreacion:         Date;
-  estado:                string;
+  id?:                    number;
+  fechaCreacion?:         Date;
+  estado?:                string;
   cliente:               Cliente;
   items:                 Item[];
-  total:                 number;
+  total?:                 number;
   direccionEnvio:        string;
   ciudadEnvio:           string;
   codigoPostalEnvio:     string;
   costoEnvio:            number;
   descuentoAplicado:     number;
   tiempoEstimadoEntrega: string;
-  metodoPago:            null;
 }
 
 export interface Cliente {
-  id:            number;
-  nombres:       string;
-  apellidos:     string;
-  numeroCedula:  null;
+  id?:            number;
+  nombres?:       string;
+  apellidos?:     string;
+  numeroCedula?:  null;
   email:         string;
-  numeroCelular: null;
+  numeroCelular?: null;
 }
 
 export interface Item {
@@ -40,3 +39,4 @@ export interface OrdenProduct {
   estado : string;
   fechaCreacion : Date;
 }
+

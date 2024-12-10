@@ -4,4 +4,5 @@ export interface Cupon {
   codigo: string;
   descuento: number;
   categorias: [];
+  nuevoTotal? :number;
 }

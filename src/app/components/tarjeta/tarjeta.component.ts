@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Tarjeta } from '../../../../models/tarjeta.model';
-import { TarjetaService } from '../../../../services/tarjeta/tarjeta.service';
+import { MetodoPagoService } from '../../../../services/metodo-pago/metodo-pago.service';
 
 @Component({
   selector: 'app-tarjeta',
@@ -31,7 +31,7 @@ export class TarjetaComponent  {
     fechaExpiracion: '12/25'
   };
 
-  constructor(private fb: FormBuilder, private _tarjetaService: TarjetaService) {
+  constructor(private fb: FormBuilder, private metodoPagoService:MetodoPagoService) {
     this.tarjetaForm = this.fb.group({
       nombreTitular: [
         '',
@@ -60,45 +60,52 @@ export class TarjetaComponent  {
         ?.value?.replace(/\s/g, '')
         .match(/.{1,4}/g)
         ?.join(' ');
-      let tarjetasGuardadas =
-        JSON.parse(localStorage.getItem('tarjetasGuardadas') || '[]') || [];
-      const tarjetaExistente = tarjetasGuardadas.find(
-        (tarjeta:Tarjeta) => tarjeta.numeroTarjeta === this.tarjeta.numeroTarjeta
-      );
-      if (tarjetaExistente) {
-        this.mensaje =
-          'La tarjeta ya existe, por favor ingrese un número diferente.';
-        this.mostrarMensaje = true;
-        setTimeout(() => (this.mostrarMensaje = false), 3000);
-      } else {
+      this.metodoPagoService.guardarMetodoPago({
+        ...this.tarjeta,
 
-        tarjetasGuardadas.push(this.tarjeta);
-        this._tarjetaService.guardarTarjeta(this.tarjeta).subscribe(
-          (response: { mensaje: string }) => {
-            console.log('Mensaje recibido:', response.mensaje);
-          },
-          (error ) => {
-            console.error('Error:', error); 
+      }).subscribe((res)=>{
+        if(res)
+          {
+            let tarjetasGuardadas =
+              JSON.parse(localStorage.getItem('tarjetasGuardadas') || '[]') || [];
+            const tarjetaExistente = tarjetasGuardadas.find(
+              (tarjeta:Tarjeta) => tarjeta.numeroTarjeta === this.tarjeta.numeroTarjeta
+            );
+            if (tarjetaExistente) {
+              this.mensaje =
+                'La tarjeta ya existe, por favor ingrese un número diferente.';
+              this.mostrarMensaje = true;
+              setTimeout(() => (this.mostrarMensaje = false), 3000);
+            } else {
+              tarjetasGuardadas.push(this.tarjeta);
+              localStorage.setItem(
+                'tarjetasGuardadas',
+                JSON.stringify(tarjetasGuardadas)
+              );
+              this.mensaje = 'Datos de la tarjeta guardados correctamente!';
+              this.mostrarMensaje = true;
+              this.tarjetaForm.reset();
+              this.tarjeta = {};
+              this.tarjetaGuardada.emit();
+              setTimeout(() => (this.mostrarMensaje = false), 3000);
+              alert('Se ha agregado la tarjeta exitosamente')
+
+            }
+
+
           }
-        );
-        
-        localStorage.setItem(
-          'tarjetasGuardadas',
-          JSON.stringify(tarjetasGuardadas)
-        );
-        this.mensaje = 'Datos de la tarjeta guardados correctamente!';
-        this.mostrarMensaje = true;
-        this.tarjetaForm.reset();
-        this.tarjeta = {};
-        this.tarjetaGuardada.emit();
-        setTimeout(() => (this.mostrarMensaje = false), 3000);
       }
-    } else {
+
+    )}
+    else {
       this.mensaje = 'Por favor, complete todos los campos correctamente.';
       this.mostrarMensaje = true;
       setTimeout(() => (this.mostrarMensaje = false), 3000);
     }
   }
+
+
+
 
   validarNombre(control: AbstractControl): ValidationErrors | null {
     const nombre = control.value;

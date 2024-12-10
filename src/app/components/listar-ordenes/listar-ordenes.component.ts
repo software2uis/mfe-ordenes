@@ -40,7 +40,16 @@ export class ListarOrdenesComponent implements OnInit {
         tap(
           (ordenes: any) => {
             this.ordenes = ordenes
-            this.productos = ordenes.map((orden: OrdenDTO, index: number) => { return {estado: orden.estado, total: orden.total, fechaCreacion :orden.fechaCreacion , ...orden.items[index]}} );
+            this.productos = ordenes.map((orden: OrdenDTO, index: number) => orden.items.map((item: Item) => {
+              return {
+                id: item.id,
+                nombre: item.nombre,
+                cantidad: item.cantidad,
+                precio: item.precio,
+                fechaCreacion: ordenes[index].fechaCreacion,
+                estado: ordenes[index].estado
+              }
+                                    }).flat()).flat()
             console.log( this.productos);
           }
         )

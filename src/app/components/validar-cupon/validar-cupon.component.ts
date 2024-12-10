@@ -26,14 +26,14 @@ export class ValidarCuponComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.cargarCupones();
+    // this.cargarCupones();
   }
 
-  cargarCupones() {
-    this._cuponService.obtenerCupones().subscribe(cupones => {
-      this.cupones = cupones;
-    });
-  }
+  // cargarCupones() {
+  //   this._cuponService.obtenerCupones().subscribe(cupones => {
+  //     this.cupones = cupones;
+  //   });
+  // }
 
   validarCupon() {
     const codigo = this.cuponForm.get('codigoCupon')?.value.trim();
@@ -45,29 +45,42 @@ export class ValidarCuponComponent implements OnInit {
       return;
     }
 
-    const cuponEncontrado = this.cupones.find(cuponObj => cuponObj.codigo === codigo.toLowerCase());
-    if (!cuponEncontrado) {
-      this.mostrarMensaje = true;
-      this.mensaje = 'Cupón inválido.';
-      setTimeout(() => (this.mostrarMensaje = false), 3000);
-      return;
-    }
+      this._cuponService.applyDiscount({codigo } as Cupon)
+      .subscribe(
+        (res:Cupon)=>{
+          if(res){
 
-    const fechaActual = new Date();
-    if (fechaActual < cuponEncontrado.fechaInicio || fechaActual > cuponEncontrado.fechaFin) {
-      this.mostrarMensaje = true;
-      this.mensaje = 'El cupón no se encuentra vigente.';
-      setTimeout(() => (this.mostrarMensaje = false), 3000);
-      return;
-    }
+                      this.mostrarMensaje = true;
+                      this.mensaje = 'Cupón validado con éxito.';
+                      setTimeout(() => (this.mostrarMensaje = false), 3000);
 
-    this.mostrarMensaje = true;
-    this.mensaje = 'Cupón validado con éxito.';
-    setTimeout(() => (this.mostrarMensaje = false), 3000);
+                      this.validacion.emit({
+                        valido: true,
+                        descuento: (res.nuevoTotal || 0)/100,
+                      });
+                      alert('Se ha aplicado el descuento exitosamente')
 
-    this.validacion.emit({
-      valido: true,
-      descuento: cuponEncontrado.descuento,
-    });
+          }
+
+        }
+      )
+
+    // const cuponEncontrado = this.cupones.find(cuponObj => cuponObj.codigo === codigo.toLowerCase());
+    // if (!cuponEncontrado) {
+    //   this.mostrarMensaje = true;
+    //   this.mensaje = 'Cupón inválido.';
+    //   setTimeout(() => (this.mostrarMensaje = false), 3000);
+    //   return;
+    // }
+
+    // const fechaActual = new Date();
+    // if (fechaActual < cuponEncontrado.fechaInicio || fechaActual > cuponEncontrado.fechaFin) {
+    //   this.mostrarMensaje = true;
+    //   this.mensaje = 'El cupón no se encuentra vigente.';
+    //   setTimeout(() => (this.mostrarMensaje = false), 3000);
+    //   return;
+    // }
+
+
   }
 }

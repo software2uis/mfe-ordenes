@@ -2,5 +2,5 @@
 export interface Tarjeta {
     nombreTitular?: string;
     numeroTarjeta?: string;
-    fechaExpiracion?: string; 
+    fechaExpiracion?: string;
   }

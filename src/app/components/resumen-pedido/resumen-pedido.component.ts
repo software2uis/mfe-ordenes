@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -12,6 +12,12 @@ import { Tarjeta } from '../../../../models/tarjeta.model';
 import { PedidoService } from '../../../../services/pedido/pedido.service';
 import { Pedido } from '../../../../models/pedido';
 import { Producto } from '../../../../models/producto.model';
+import { MetodoPagoService } from '../../../../services/metodo-pago/metodo-pago.service';
+import { OrdenDTO } from '../../../../models/orden.model';
+import { OrdenService } from '../../services/orden.service';
+import { map, switchMap, tap } from 'rxjs';
+import { Client } from '../../../../models/client.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -37,10 +43,14 @@ export class ResumenPedidoComponent implements OnInit {
   metodoPagoForm: FormGroup;
   validCupon: boolean = false;
   mostrarTarjetas: boolean = true;
-  mostrarMensaje: boolean = false;
-  mensaje: string = '';
+  mostrarMensaje:boolean = false;
+  mensaje:string ='';
+  user: string | null = null;
+  idCliente: number | null= null;
+  router = inject(Router);
 
-  constructor(private fb: FormBuilder, private _pedidoServ: PedidoService) {
+  constructor(private fb: FormBuilder, private _pedidoServ: PedidoService, private metodoPagoService:MetodoPagoService, private ordenService:OrdenService) {
+
     this.calcularTotal();
     this.metodoPagoForm = this.fb.group({
       metodoPago: ['', Validators.required],
@@ -55,48 +65,69 @@ export class ResumenPedidoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._pedidoServ.obtenerProductos().subscribe(
-      (response: Producto[]) => {
-        if (response && response.length > 0) {
-          response.forEach((producto) => {
-            if (producto.quantity > 0) {
-              this.productos.push(producto)
-              this.monto += producto.price * producto.quantity;
-              this.total = this.monto;
-            }
-          });
-        } else {
-          console.log('No se encontraron productos');
-        }
-      },
-      (error) => {
-        console.error('Error fetching data', error);
-      }
-    );
 
-    const tarjetasMock: Tarjeta[] = [
-      {
-        nombreTitular: 'María López',
-        numeroTarjeta: '9876 5432 1098 7654',
-        fechaExpiracion: '11/29',
-      },
-      {
-        nombreTitular: 'Carlos García',
-        numeroTarjeta: '4567 8901 2345 6789',
-        fechaExpiracion: '10/26',
-      },
-      {
-        nombreTitular: 'Ana Martínez',
-        numeroTarjeta: '3210 9876 5432 1098',
-        fechaExpiracion: '09/27',
-      },
-      {
-        nombreTitular: 'Luis Fernández',
-        numeroTarjeta: '6543 2109 8765 4321',
-        fechaExpiracion: '08/27',
-      },
-    ];
-    localStorage.setItem('tarjetasGuardadas', JSON.stringify(tarjetasMock));
+
+    this.user = localStorage.getItem('username');
+    if(this.user){
+      this.ordenService.getClientByEmail(this.user).
+      pipe(
+        map((client: Client) => this.idCliente=  client.id as number),
+
+      ).subscribe(
+        ()=>{
+          if(this.user){
+              this._pedidoServ.obtenerProductos(this.user).subscribe(
+                (response: Producto[]) => {
+                  if (response && response.length > 0) {
+                    response.forEach((producto) => {
+                      if (producto.quantity > 0) {
+                        this.productos.push(producto)
+                        this.monto += producto.price * producto.quantity;
+                        this.total = this.monto;
+                      }
+                    });
+                  } else {
+                    console.log('No se encontraron productos');
+                  }
+                },
+                (error) => {
+                  console.error('Error fetching data', error);
+                }
+              );
+
+            }
+
+          }
+
+      );
+    }else{
+      this.router.navigateByUrl('/login');
+    }
+
+
+    // const tarjetasMock: Tarjeta[] = [
+    //   {
+    //     nombreTitular: 'María López',
+    //     numeroTarjeta: '9876 5432 1098 7654',
+    //     fechaExpiracion: '11/29',
+    //   },
+    //   {
+    //     nombreTitular: 'Carlos García',
+    //     numeroTarjeta: '4567 8901 2345 6789',
+    //     fechaExpiracion: '10/26',
+    //   },
+    //   {
+    //     nombreTitular: 'Ana Martínez',
+    //     numeroTarjeta: '3210 9876 5432 1098',
+    //     fechaExpiracion: '09/27',
+    //   },
+    //   {
+    //     nombreTitular: 'Luis Fernández',
+    //     numeroTarjeta: '6543 2109 8765 4321',
+    //     fechaExpiracion: '08/27',
+    //   },
+    // ];
+    // localStorage.setItem('tarjetasGuardadas', JSON.stringify(tarjetasMock));
   }
 
   enviarPedido() {
@@ -113,16 +144,29 @@ export class ResumenPedidoComponent implements OnInit {
       setTimeout(() => (this.mostrarMensaje = false), 3000);
       return;
     }
-    const datosPedido: Pedido = {
-      productos: this.productos,
-      metodoPago: this.metodoPagoSeleccionado,
-      descuentos: this.descuentos / 100,
-      total: this.total,
+    const datosPedido: OrdenDTO = {
+      items: this.productos.map((producto) => {
+        return {
+          id: producto.idMongo,
+          cantidad: producto.quantity,
+          precio: producto.price,
+          nombre: producto.name
+        };
+      }),
+      cliente:{
+        email: this.user || ''
+      },
+      ciudadEnvio : 'Bogota',
+      direccionEnvio : 'Calle 123',
+      costoEnvio : 10,
+      descuentoAplicado: 20.0,
+      tiempoEstimadoEntrega : "2 dias",
+      codigoPostalEnvio : "11001",
     };
 
-    console.log(datosPedido);
 
-    if (datosPedido) {
+
+    if (datosPedido && this.idCliente) {
       this.estado = true;
 
       const btnEnviar = document.getElementById('btnEnviar');
@@ -140,10 +184,24 @@ export class ResumenPedidoComponent implements OnInit {
         btnCupon.style.display = 'none';
       }
 
-      this.mostrarMensaje = true;
-      this.mensaje = '¡Pago Exitoso!';
-      setTimeout(() => (this.mostrarMensaje = false), 3000);
+      this._pedidoServ.enviarPedido(datosPedido,this.idCliente)
+      .subscribe(
+        (res)=>{
+          if(res)
+            {
+              this.mostrarMensaje = true;
+              this.mensaje = '¡Pago Exitoso!';
+              setTimeout(() => {this.mostrarMensaje = false;
+                this.eliminarProductos();
+
+
+              }, 3000);
+            }
+        }
+      )
+
     }
+
 
     //URL pendiente
     // this._pedidoServ.enviarPedido(datosPedido).subscribe(
@@ -178,9 +236,9 @@ export class ResumenPedidoComponent implements OnInit {
 
   aplicarDescuento(event: { valido: boolean; descuento: number }) {
     if (event.valido) {
-      this.descuentos = event.descuento * 100;
-      this.total = this.monto * (1 - event.descuento);
-      setTimeout(() => this.mostrarValidCupon(), 3000);
+      this.descuentos  = event.descuento * 100;
+      this.total = this.monto  * ( 1 - event.descuento );
+      setTimeout(() => (this.mostrarValidCupon()), 3000);
     }
   }
 
@@ -195,5 +253,16 @@ export class ResumenPedidoComponent implements OnInit {
       this.total = this.monto;
       console.log(this.total);
     });
+  }
+
+  eliminarProductos(){
+    this.productos.forEach((producto) => {
+      this._pedidoServ.eliminarProductos(this.user || '', producto.idMongo).subscribe();
+    });
+    this.productos = [];
+    this.monto = 0;
+    this.total = 0;
+    this.router.navigateByUrl('');
+
   }
 }
