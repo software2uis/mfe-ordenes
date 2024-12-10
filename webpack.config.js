@@ -31,7 +31,7 @@ module.exports = {
       filename: "remoteEntry.js",
       exposes: {
           './RoutingModule': './src/app/app.routes.ts',
-          './OrdenesComponent': './src/app/ordenes/ordenes.component.ts',
+          './OrdenesComponent': './src/app/components/listar-ordenes/listar-ordenes.component.ts',
       },
 
         // For remotes (please adjust)

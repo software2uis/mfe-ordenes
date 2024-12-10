@@ -6,5 +6,5 @@ export const environments = {
   backCatalogo: 'http://192.168.193.90:8081',
   backAuth: 'http://192.168.193.90:8082',
   backCarrito: 'http://192.168.193.90:8090',
-  backOrdenes: 'http://192.168.193.90:8100'
+  backOrdenes: 'http://10.6.101.92:8100'
 }
