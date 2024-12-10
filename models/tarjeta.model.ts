@@ -1,7 +1,7 @@
 // src/models/tarjeta.model.ts
 export interface Tarjeta {
-    nombre?: string;
+    nombreTitular?: string;
     numeroTarjeta?: string;
-    fechaExpiracion?: string; 
+    fechaExpiracion?: string;
     codigoSeguridad?: string;
   }

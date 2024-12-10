@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Tarjeta } from '../../../../models/tarjeta.model';
+import { MetodoPagoService } from '../../../../services/metodo-pago/metodo-pago.service';
 
 @Component({
   selector: 'app-tarjeta',
@@ -31,7 +32,7 @@ export class TarjetaComponent {
     codigoSeguridad: '123',
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private metodoPagoService:MetodoPagoService) {
     this.tarjetaForm = this.fb.group({
       nombre: [
         '',
@@ -64,35 +65,53 @@ export class TarjetaComponent {
         ?.value?.replace(/\s/g, '')
         .match(/.{1,4}/g)
         ?.join(' ');
-      let tarjetasGuardadas =
-        JSON.parse(localStorage.getItem('tarjetasGuardadas') || '[]') || [];
-      const tarjetaExistente = tarjetasGuardadas.find(
-        (tarjeta:Tarjeta) => tarjeta.numeroTarjeta === this.tarjeta.numeroTarjeta
-      );
-      if (tarjetaExistente) {
-        this.mensaje =
-          'La tarjeta ya existe, por favor ingrese un número diferente.';
-        this.mostrarMensaje = true;
-        setTimeout(() => (this.mostrarMensaje = false), 3000);
-      } else {
-        tarjetasGuardadas.push(this.tarjeta);
-        localStorage.setItem(
-          'tarjetasGuardadas',
-          JSON.stringify(tarjetasGuardadas)
-        );
-        this.mensaje = 'Datos de la tarjeta guardados correctamente!';
-        this.mostrarMensaje = true;
-        this.tarjetaForm.reset();
-        this.tarjeta = {};
-        this.tarjetaGuardada.emit();
-        setTimeout(() => (this.mostrarMensaje = false), 3000);
+
+      this.metodoPagoService.guardarMetodoPago({
+        ...this.tarjeta,
+
+      }).subscribe((res)=>{
+        if(res)
+          {
+            let tarjetasGuardadas =
+              JSON.parse(localStorage.getItem('tarjetasGuardadas') || '[]') || [];
+            const tarjetaExistente = tarjetasGuardadas.find(
+              (tarjeta:Tarjeta) => tarjeta.numeroTarjeta === this.tarjeta.numeroTarjeta
+            );
+            if (tarjetaExistente) {
+              this.mensaje =
+                'La tarjeta ya existe, por favor ingrese un número diferente.';
+              this.mostrarMensaje = true;
+              setTimeout(() => (this.mostrarMensaje = false), 3000);
+            } else {
+              tarjetasGuardadas.push(this.tarjeta);
+              localStorage.setItem(
+                'tarjetasGuardadas',
+                JSON.stringify(tarjetasGuardadas)
+              );
+              this.mensaje = 'Datos de la tarjeta guardados correctamente!';
+              this.mostrarMensaje = true;
+              this.tarjetaForm.reset();
+              this.tarjeta = {};
+              this.tarjetaGuardada.emit();
+              setTimeout(() => (this.mostrarMensaje = false), 3000);
+              alert('Se ha agregado la tarjeta exitosamente')
+
+            }
+
+
+          }
       }
-    } else {
+
+    )}
+    else {
       this.mensaje = 'Por favor, complete todos los campos correctamente.';
       this.mostrarMensaje = true;
       setTimeout(() => (this.mostrarMensaje = false), 3000);
     }
   }
+
+
+
 
   validarNombre(control: AbstractControl): ValidationErrors | null {
     const nombre = control.value;

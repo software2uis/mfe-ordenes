@@ -7,6 +7,7 @@ import { Tarjeta } from '../../../../models/tarjeta.model';
 import { PedidoService } from '../../../../services/pedido/pedido.service';
 import { Pedido } from '../../../../models/pedido';
 import { Producto } from '../../../../models/producto.model';
+import { MetodoPagoService } from '../../../../services/metodo-pago/metodo-pago.service';
 
 
 @Component({
@@ -24,14 +25,14 @@ export class ResumenPedidoComponent implements OnInit{
   descuentos: number = 0;
   metodoPagoSeleccionado: string = '';
   mostrarFormularioTarjeta: boolean = false;
-  tarjetasGuardadas: Tarjeta[] = []; 
+  tarjetasGuardadas: Tarjeta[] = [];
   metodoPagoForm: FormGroup;
   validCupon: boolean = false;
   mostrarTarjetas: boolean = true;
   mostrarMensaje:boolean = false;
   mensaje:string ='';
 
-  constructor(private fb: FormBuilder, private _pedidoServ: PedidoService) { 
+  constructor(private fb: FormBuilder, private _pedidoServ: PedidoService, private metodoPagoService:MetodoPagoService) {
 
     this.calcularTotal();
 
@@ -50,22 +51,22 @@ export class ResumenPedidoComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this._pedidoServ.obtenerProductos().subscribe(
-  (response: Producto[]) => {
-    if (response && response.length > 0) {
-      this.productos = response;
-    } else {
-      console.log('No se encontraron productos');
-    }
-  },
-  (error) => {
-    console.error('Error fetching data', error);
-  }
-);
+//     this._pedidoServ.obtenerProductos().subscribe(
+//   (response: Producto[]) => {
+//     if (response && response.length > 0) {
+//       this.productos = response;
+//     } else {
+//       console.log('No se encontraron productos');
+//     }
+//   },
+//   (error) => {
+//     console.error('Error fetching data', error);
+//   }
+// );
 
     this.calcularTotal()
   }
-  
+
   enviarPedido() {
     if (!this.productos.length) {
       this.mostrarMensaje = true;
@@ -73,7 +74,7 @@ export class ResumenPedidoComponent implements OnInit{
       setTimeout(() => (this.mostrarMensaje = false), 3000);
       return;
     }
-    
+
     if (!this.metodoPagoSeleccionado) {
       this.mostrarMensaje = true;
       this.mensaje = 'El método de pago es requerido.';
@@ -91,7 +92,7 @@ export class ResumenPedidoComponent implements OnInit{
 
     if(datosPedido){
       this.estado = true;
-      
+
 
       const btnEnviar = document.getElementById('btnEnviar');
       if (btnEnviar) {
@@ -111,10 +112,10 @@ export class ResumenPedidoComponent implements OnInit{
       this.mostrarMensaje = true;
       this.mensaje = '¡Pago Exitoso!';
       setTimeout(() => (this.mostrarMensaje = false), 3000);
-    } 
-   
+    }
 
-    
+
+
     //URL pendiente
     // this._pedidoServ.enviarPedido(datosPedido).subscribe(
     //   (response) => {
@@ -149,7 +150,7 @@ export class ResumenPedidoComponent implements OnInit{
 
   aplicarDescuento(event: { valido: boolean; descuento: number }) {
     if (event.valido) {
-      this.descuentos  = event.descuento * 100; 
+      this.descuentos  = event.descuento * 100;
       this.total = this.monto  * ( 1 - event.descuento );
       setTimeout(() => (this.mostrarValidCupon()), 3000);
     }
